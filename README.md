@@ -10,10 +10,10 @@ Requirements
 
 
 Procedure
-1.Open the "Mouse_Control.ino" file with the Arduino IDE and upload it to your board.
-2.Build your Circuit (see circuit_image).
-3.Run the java code in your Java IDE of choice(read NOTE at the end of document).
-4.Enjoy.
+  1.Open the "Mouse_Control.ino" file with the Arduino IDE and upload it to your board.
+  2.Build your Circuit (see circuit_image).
+  3.Run the java code in your Java IDE of choice(read NOTE at the end of document).
+  4.Enjoy.
 
 
 
