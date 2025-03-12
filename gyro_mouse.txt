@@ -1,0 +1,155 @@
+import com.fazecast.jSerialComm.*;
+import java.awt.event.*;
+import java.awt.Robot; 
+import java.awt.MouseInfo;
+import java.lang.Thread;
+public class Gyro_Mouse
+{
+    public static void main (String[] Args)
+    {
+
+        int BaudRate = 9600;
+        int DataBits = 8;
+        int StopBits = SerialPort.ONE_STOP_BIT;
+        int Parity   = SerialPort.NO_PARITY;
+
+        SerialPort [] AvailablePorts = SerialPort.getCommPorts();
+
+        System.out.println("\n\n SerialPort Data Reception");
+
+        System.out.print("\n\n Available Ports ");
+        for (int i = 0; i<AvailablePorts.length ; i++)
+        {
+            System.out.println(i + " - " + AvailablePorts[i].getSystemPortName() + " -> " + AvailablePorts[i].getDescriptivePortName());
+        }
+
+        SerialPort MySerialPort = AvailablePorts[0];
+
+        MySerialPort.setComPortParameters(BaudRate,DataBits,StopBits,Parity);
+
+        MySerialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 1000, 0); 
+
+        MySerialPort.openPort(); 
+        if (MySerialPort.isOpen())
+            System.out.println("\n" + MySerialPort.getSystemPortName() + " is Open ");
+        else
+            System.out.println(" Port not open ");
+
+        System.out.println("\n Selected Port               = " + MySerialPort.getSystemPortName());
+        System.out.println(" Selected Baud rate          = " + MySerialPort.getBaudRate());
+        System.out.println(" Selected Number of DataBits = " + MySerialPort.getNumDataBits());
+        System.out.println(" Selected Number of StopBits = " + MySerialPort.getNumStopBits());
+        System.out.println(" Selected Parity             = " + MySerialPort.getParity());
+        System.out.println(" Selected Read Time Out      = " + MySerialPort.getReadTimeout() + "mS");
+
+        MySerialPort.flushIOBuffers();
+
+        try 
+        {Thread.sleep(3000);
+            byte[] WriteBytes= new byte[1];
+            WriteBytes[0]='a';
+            MySerialPort.writeBytes(WriteBytes,1);
+
+            int steps=50;
+            int dx=50;
+            int dy=50;
+            while (true)
+            {
+                byte[] readBuffer = new byte[22];
+                int numRead = MySerialPort.readBytes(readBuffer, readBuffer.length);
+                System.out.print("Read " + numRead + " bytes -");
+                String S = new String(readBuffer, "UTF-8").trim(); 
+                System.out.println("Received -> "+ S);
+
+                double angle_x =Double.parseDouble(S.substring(0,S.indexOf('|')));
+                double angle_y =Double.parseDouble(S.substring(S.indexOf('|')+1,S.indexOf(',')));
+                double angle_z =Double.parseDouble(S.substring(S.indexOf(',')+1,S.indexOf('$')));
+                int sw =Integer.parseInt(S.substring(S.indexOf('$')+1,S.length()));
+
+                Robot robot = null;
+                robot = new Robot();
+
+                int y = MouseInfo.getPointerInfo().getLocation().y;
+                int x = MouseInfo.getPointerInfo().getLocation().x;
+                
+                
+                
+                if(sw==1)
+                {
+                    robot.keyPress(KeyEvent.VK_W);
+                    
+                }
+                
+                else if(sw==2)
+                {
+                    robot.keyPress(KeyEvent.VK_S);
+                    
+                }
+                
+                else if(sw==3)
+                {
+                    robot.keyPress(KeyEvent.VK_SPACE);
+                    
+                }
+                
+                else if(sw==0)
+                {
+                    robot.keyRelease(KeyEvent.VK_W);
+                    robot.keyRelease(KeyEvent.VK_S);
+                    robot.keyRelease(KeyEvent.VK_SPACE);
+                }
+
+                if(angle_x > 20.0 && angle_x < 90.0)
+                {
+                    for (int i = 1; i < steps; i++) {
+                        int newX = x;
+                        int newY = y + dy / steps * i;
+                        robot.mouseMove(newX, newY);
+                        Thread.sleep(3);
+                    }
+                }
+                if(angle_x > 270.0 && angle_x < 340.0)
+                {
+                    for (int i = 1; i < steps; i++) {
+                        int newX = x;
+                        int newY = y - dy / steps * i;
+                        robot.mouseMove(newX, newY);
+                        Thread.sleep(3);
+                    }
+                }
+                if(angle_y > 20.0 && angle_y < 90.0)
+                {
+                    for (int i = 1; i < steps; i++) {
+                        int newX = x + dx / steps * i;
+                        int newY = y;
+                        robot.mouseMove(newX, newY);
+                        Thread.sleep(3);
+                    }
+                }
+
+                if(angle_y > 270.0 && angle_y < 340.0)
+                {
+                    for (int i = 1; i < steps; i++) {
+                        int newX = x - dx / steps * i;
+                        int newY = y;
+                        robot.mouseMove(newX, newY);
+                        Thread.sleep(3);
+                    }
+                }
+
+            }
+        } 
+
+        catch (Exception e) 
+        {
+            e.printStackTrace(); 
+        }
+
+        MySerialPort.closePort();
+        if (MySerialPort.isOpen())
+            System.out.println(MySerialPort.getSystemPortName() + " is Open ");
+        else
+            System.out.println("\n Port not open ");
+
+    }
+}
