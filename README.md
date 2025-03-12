@@ -4,7 +4,7 @@ Requirements
   2. Arduino IDE.
   3. Arduino Uno Board
   4. Flex Sensor(s)
-  5. Joystick Module compatible with Arduino UNO.
+  5. Gyroscope Module compatible with Arduino UNO.
 
 
 
