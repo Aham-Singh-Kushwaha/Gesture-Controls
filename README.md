@@ -10,9 +10,9 @@ Requirements
 
 
 Procedure
-  1. Open the "Mouse_Control.ino" file with the Arduino IDE and upload it to your board.
+  1. Open the "Gyro_Mouse.ino" file with the Arduino IDE and upload it to your board.
   2. Build your Circuit (see circuit_image).
-  3. Run the java code in your Java IDE of choice(read NOTE at the end of document).
+  3. Run the java code from the file "gyro_mouse.txt" in your Java IDE of choice(read NOTE at the end of document).
   4. Enjoy.
   
   
